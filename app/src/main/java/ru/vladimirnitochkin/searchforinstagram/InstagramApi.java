@@ -19,7 +19,7 @@ public interface InstagramApi {
 
     @GET("v1/users/self/media/recent/?access_token="+ACCESS_TOKEN)
     Call<Post> getData(@Query("COUNT") int count,
-                                  @Query("MIN_ID") int minId);
+                                  @Query("MAX_ID") String maxId);
     @GET("v1/users/self/?access_token="+ACCESS_TOKEN)
     Call<Profile> getProfile();
 }

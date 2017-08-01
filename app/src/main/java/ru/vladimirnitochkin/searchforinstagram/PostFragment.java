@@ -105,36 +105,6 @@ public class PostFragment extends Fragment {
     String getCommentsText() {
         return CommentsText;
     }
-    static ArrayList<PostFragment> getPosts(final int count) {
-        InstagramApi instagramApi = App.getApi();
-        final Post instPost = new Post();
-        final ArrayList<PostFragment> postsList = new ArrayList<>();
-        instagramApi.getData(10,0).enqueue(new Callback<Post>() {
-            @Override
-            public void onResponse(retrofit2.Call<Post> call, retrofit2.Response<Post> response) {
-                if (response.isSuccessful()) {
-                    instPost.setData(response.body().getData());
-                    for (int i=0;i<count;++i) {
-                        PostFragment fragment = new PostFragment();
-
-                        fragment
-                                .setImageURL(instPost.getData().get(i).getImages().getStandardResolution().getUrl())
-                                .setLikesText(instPost.getData().get(i).getLikes().getCount())
-                                .setCommentsText(instPost.getData().get(i).getComments().getCount());
-                        postsList.add(fragment);
-                    }
-                } else {
-                    Log.d("ProfileImageCallback", "Code: " + response.code() + " Message: " + response.message());
-                }
-            }
-
-            @Override
-            public void onFailure(retrofit2.Call<Post> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
-        return postsList;
-    }
 
     public String getDateText() {
         return DateText;
