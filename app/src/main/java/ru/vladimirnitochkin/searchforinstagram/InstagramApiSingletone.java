@@ -10,7 +10,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 class InstagramApiSingletone {
     private static InstagramApi instagramApi;
     private Retrofit retrofit;
-
     private static String lastId;
     private static final InstagramApiSingletone ourInstance = new InstagramApiSingletone();
 

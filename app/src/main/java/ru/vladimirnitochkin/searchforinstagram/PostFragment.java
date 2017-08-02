@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.app.Fragment;
 import android.telecom.Call;
@@ -39,48 +41,37 @@ import retrofit2.http.Multipart;
 import ru.vladimirnitochkin.searchforinstagram.pojo.Profile;
 
 
-public class PostFragment extends Fragment {
+public class PostFragment extends Fragment implements Parcelable{
     //private Bitmap PostImage;
     private String ImageURL;
     private String LikesText;
     private String CommentsText;
     private String DateText;
-    private ImageView PostImageView;
+
+    protected PostFragment(Parcel in) {
+        ImageURL = in.readString();
+        LikesText = in.readString();
+        CommentsText = in.readString();
+        DateText = in.readString();
+    }
+    PostFragment() {}
+    public static final Creator<PostFragment> CREATOR = new Creator<PostFragment>() {
+        @Override
+        public PostFragment createFromParcel(Parcel in) {
+            return new PostFragment(in);
+        }
+
+        @Override
+        public PostFragment[] newArray(int size) {
+            return new PostFragment[size];
+        }
+    };
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.post_fragment, container, false);
-        DisplayMetrics displayMetrics = this.getResources().getDisplayMetrics();
-        int Width = (int)(displayMetrics.widthPixels - displayMetrics.density * 4);
-        //float Height = displayMetrics.heightPixels;
-        PostImageView = (ImageView) view.findViewById(R.id.postImage);
-        TextView likesTextView = (TextView) view.findViewById(R.id.LikesCount);
-        TextView commentsTextView = (TextView) view.findViewById(R.id.CommentsCount);
-        // if (PostImage!=null && LikesText != null && CommentsText !=null) {
-        //postImageView.setImageBitmap(Bitmap.createScaledBitmap(PostImage,(int)Width,(int)Width,false));
-        /*Glide
-                .with(this)
-                .load("http://www.dentoncorkermarshall.com/wp-content/uploads/2013/12/Asia-Square-06.jpg?x92178")
-                .into(PostImageView);*/
-        Bitmap bmp=BitmapFactory.decodeResource(getResources(), R.drawable.sample);
-
-        //PostImageView.setImageBitmap(Bitmap.createScaledBitmap(bmp, Width, Width, false));
-        PostImageView.getLayoutParams().height=Width;
-        PostImageView.getLayoutParams().width=Width;
-        PostImageView.requestLayout();
-        likesTextView.setText(LikesText);
-        commentsTextView.setText(CommentsText);
-        //}
-        return view;
+        return inflater.inflate(R.layout.post_fragment, container, false);
     }
-    ImageView getPostImageView() {
-        return PostImageView;
-    }
-    /*PostFragment setPostImage(Bitmap bmp) {
-        PostImage=bmp;
-        return this;
-    }*/
     PostFragment setLikesText(int count) {
         LikesText=count+"";
         return this;
@@ -89,9 +80,6 @@ public class PostFragment extends Fragment {
         CommentsText=count+"";
         return this;
     }
-   /* Bitmap getPostImage() {
-        return PostImage;
-    }*/
    PostFragment setImageURL(String url) {
        ImageURL=url;
        return this;
@@ -112,6 +100,19 @@ public class PostFragment extends Fragment {
 
     public void setDateText(String dateText) {
         DateText = dateText;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(ImageURL);
+        parcel.writeString(LikesText);
+        parcel.writeString(CommentsText);
+        parcel.writeString(DateText);
     }
 }
 

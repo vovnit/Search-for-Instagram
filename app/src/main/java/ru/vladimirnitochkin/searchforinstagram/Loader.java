@@ -75,7 +75,10 @@ public class Loader {
 
     public static void loadPosts(final ArrayList<PostFragment> postsList, final PostAdapter postAdapter,
                                  final int num, @Nullable final SwipeRefreshLayout swipeRefreshLayout) {
+        MainActivity.loadingMore=true;
         final boolean isEmpty = postsList.isEmpty();
+
+        //mPreviousLastId=InstagramApiSingletone.getLastId();
         String maxId = InstagramApiSingletone.getLastId();
         final Post instPost = new Post();
         instagramApi.getData(InstagramApi.ACCESS_TOKEN, num,maxId).enqueue(new Callback<Post>() {
@@ -83,9 +86,16 @@ public class Loader {
             public void onResponse(retrofit2.Call<Post> call, retrofit2.Response<Post> response) {
                 if (response.isSuccessful()) {
                     instPost.setData(response.body().getData());
-                    String maxId=response.body().getPagination().getNextMaxId();
+                    if (instPost.getData().size()==0) {
+                        if (swipeRefreshLayout!=null) {
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                        return;
+                    }
+                    String maxId = response.body().getPagination().getNextMaxId();
+                    InstagramApiSingletone.setLastId(maxId);
                     DateFormat formatter = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy", Locale.getDefault());
-                    for (int i=0;i<num;++i) {
+                    for (int i=0;i<instPost.getData().size();++i) {
                         PostFragment fragment = new PostFragment();
                         String instDate = instPost.getData().get(i).getCreatedTime();
                         Timestamp timestamp = new Timestamp(Long.parseLong(instDate));
@@ -104,6 +114,7 @@ public class Loader {
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            MainActivity.loadingMore=false;
                             postAdapter.notifyDataSetChanged();
                         }
                     });
