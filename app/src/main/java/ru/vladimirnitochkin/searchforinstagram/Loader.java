@@ -78,12 +78,12 @@ public class Loader {
         final boolean isEmpty = postsList.isEmpty();
         String maxId = InstagramApiSingletone.getLastId();
         final Post instPost = new Post();
-        instagramApi.getData(num,maxId).enqueue(new Callback<Post>() {
+        instagramApi.getData(InstagramApi.ACCESS_TOKEN, num,maxId).enqueue(new Callback<Post>() {
             @Override
             public void onResponse(retrofit2.Call<Post> call, retrofit2.Response<Post> response) {
                 if (response.isSuccessful()) {
                     instPost.setData(response.body().getData());
-                    String maxId=instPost.getPagination().getNextMaxId(); //TODO make it work
+                    String maxId=response.body().getPagination().getNextMaxId();
                     DateFormat formatter = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy", Locale.getDefault());
                     for (int i=0;i<num;++i) {
                         PostFragment fragment = new PostFragment();
