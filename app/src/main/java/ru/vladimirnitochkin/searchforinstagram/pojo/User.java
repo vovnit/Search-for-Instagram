@@ -6,22 +6,33 @@ import com.google.gson.annotations.SerializedName;
 
 public class User {
 
-    @SerializedName("username")
-    @Expose
-    private String username;
-    @SerializedName("profile_picture")
-    @Expose
-    private String profilePicture;
     @SerializedName("id")
     @Expose
     private String id;
+    @SerializedName("full_name")
+    @Expose
+    private String fullName;
+    @SerializedName("profile_picture")
+    @Expose
+    private String profilePicture;
+    @SerializedName("username")
+    @Expose
+    private String username;
 
-    public String getUsername() {
-        return username;
+    public String getId() {
+        return id;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getProfilePicture() {
@@ -32,12 +43,12 @@ public class User {
         this.profilePicture = profilePicture;
     }
 
-    public String getId() {
-        return id;
+    public String getUsername() {
+        return username;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
 }

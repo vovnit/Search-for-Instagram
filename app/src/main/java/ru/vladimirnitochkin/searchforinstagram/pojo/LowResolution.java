@@ -6,23 +6,15 @@ import com.google.gson.annotations.SerializedName;
 
 public class LowResolution {
 
-    @SerializedName("url")
-    @Expose
-    private String url;
     @SerializedName("width")
     @Expose
     private Integer width;
     @SerializedName("height")
     @Expose
     private Integer height;
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
+    @SerializedName("url")
+    @Expose
+    private String url;
 
     public Integer getWidth() {
         return width;
@@ -38,6 +30,14 @@ public class LowResolution {
 
     public void setHeight(Integer height) {
         this.height = height;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
 }

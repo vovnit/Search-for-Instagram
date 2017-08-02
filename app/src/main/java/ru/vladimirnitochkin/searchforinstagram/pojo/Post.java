@@ -7,13 +7,23 @@ import com.google.gson.annotations.SerializedName;
 
 public class Post {
 
-    @SerializedName("data")
-    @Expose
-    private List<Datum> data = null;
-
     @SerializedName("pagination")
     @Expose
     private Pagination pagination;
+    @SerializedName("data")
+    @Expose
+    private List<Datum> data = null;
+    @SerializedName("meta")
+    @Expose
+    private Meta meta;
+
+    public Pagination getPagination() {
+        return pagination;
+    }
+
+    public void setPagination(Pagination pagination) {
+        this.pagination = pagination;
+    }
 
     public List<Datum> getData() {
         return data;
@@ -23,12 +33,12 @@ public class Post {
         this.data = data;
     }
 
-    public Pagination getPagination() {
-        return pagination;
+    public Meta getMeta() {
+        return meta;
     }
 
-    public void setPagination(Pagination pagination) {
-        this.pagination = pagination;
+    public void setMeta(Meta meta) {
+        this.meta = meta;
     }
 
 }
