@@ -5,14 +5,12 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.ImageViewTarget;
 
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -75,7 +73,7 @@ public class Loader {
 
     public static void loadPosts(final ArrayList<PostFragment> postsList, final PostAdapter postAdapter,
                                  final int num, @Nullable final SwipeRefreshLayout swipeRefreshLayout) {
-        MainActivity.loadingMore=true;
+        MainActivity.isLoadingMore =true;
         final boolean isEmpty = postsList.isEmpty();
 
         //mPreviousLastId=InstagramApiSingletone.getLastId();
@@ -114,7 +112,7 @@ public class Loader {
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            MainActivity.loadingMore=false;
+                            MainActivity.isLoadingMore =false;
                             postAdapter.notifyDataSetChanged();
                         }
                     });

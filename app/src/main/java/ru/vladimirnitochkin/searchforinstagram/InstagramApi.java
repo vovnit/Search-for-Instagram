@@ -16,7 +16,7 @@ import ru.vladimirnitochkin.searchforinstagram.pojo.Profile;
 public interface InstagramApi {
     String BASE_URL="https://api.instagram.com/";
     String ACCESS_TOKEN="1414707315.3469706.3014ea70b5b04bc6aed3d47f4738f445";
-
+    int PostsToLoad=5;
     @GET("v1/users/self/media/recent/")
     Call<Post> getData(@Query("access_token") String access_token, @Query("count") int count,
                                   @Query("max_id") String maxId);
