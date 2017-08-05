@@ -42,7 +42,6 @@ import ru.vladimirnitochkin.searchforinstagram.pojo.Profile;
 
 
 public class PostFragment extends Fragment implements Parcelable{
-    //private Bitmap PostImage;
     private String ImageURL;
     private String LikesText;
     private String CommentsText;
@@ -73,11 +72,11 @@ public class PostFragment extends Fragment implements Parcelable{
         return inflater.inflate(R.layout.post_fragment, container, false);
     }
     PostFragment setLikesText(int count) {
-        LikesText=count+"";
+        LikesText=Integer.toString(count);
         return this;
     }
     PostFragment setCommentsText(int count) {
-        CommentsText=count+"";
+        CommentsText=Integer.toString(count);
         return this;
     }
    PostFragment setImageURL(String url) {

@@ -21,70 +21,72 @@ import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import ru.vladimirnitochkin.searchforinstagram.pojo.Datum;
 import ru.vladimirnitochkin.searchforinstagram.pojo.Post;
 import ru.vladimirnitochkin.searchforinstagram.pojo.Profile;
 
-/**
- * Created by vovnit on 01.08.17.
- */
-
-public class Loader {
+class Loader {
     static private InstagramApi instagramApi=InstagramApiSingletone.getApi();
 
-    public static Context getContext() {
-        return mContext;
+    private Context context;
+    void setContext(Context context) {
+        this.context = context;
     }
 
-    public static void setContext(Context mContext) {
-        Loader.mContext = mContext;
-    }
-
-    static private Context mContext;
-
-    public static void loadProfile(final ImageView profileImage, final TextView profileName) {
-
+    void loadProfile(final ImageView profileImage, final TextView profileName) {
         instagramApi.getProfile().enqueue(new Callback<Profile>() {
             @Override
             public void onResponse(Call<Profile> call, retrofit2.Response<Profile> response) {
                 if (response.isSuccessful()) {
                     Profile profile = response.body();
-                    Glide.with(mContext)
-                            .load(profile.getData().getProfilePicture())
-                            .apply(RequestOptions.circleCropTransform())
-                            .into(profileImage);
-                    String fullName=profile.getData().getFullName();
-                    String username=profile.getData().getUsername();
-                    profileName.setText( (fullName.isEmpty())? username : fullName);
+                    if (profile != null) {
+                        Glide.with(context)
+                                .load(profile.getData().getProfilePicture())
+                                .apply(RequestOptions.circleCropTransform())
+                                .into(profileImage);
+                        String fullName = profile.getData().getFullName();
+                        String username = profile.getData().getUsername();
+                        profileName.setText( (fullName.isEmpty()) ? username : fullName);
+                    } else {
+                        Toast toast = Toast.makeText(context,
+                                context.getResources().getText(R.string.profile_loading_error),
+                                Toast.LENGTH_LONG);
+                        toast.show();
+                    }
                 } else {
-                    Toast toast = Toast.makeText(mContext, "Oops! Something went wrong.", Toast.LENGTH_LONG);
+                    Toast toast = Toast.makeText(context,
+                            context.getResources().getText(R.string.profile_loading_error),
+                            Toast.LENGTH_LONG);
                     toast.show();
-                    Log.d("ProfileImageCallback", "Code: " + response.code() + " Message: " + response.message());
+                    Log.d("Profile Data Callback", "Code: " +
+                            response.code() + " Message: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<Profile> call, Throwable t) {
-                Toast toast = Toast.makeText(mContext, "Damn! That was a failure.", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(context,
+                        context.getResources().getText(R.string.internet_error),
+                        Toast.LENGTH_LONG);
                 toast.show();
                 t.printStackTrace();
             }
         });
     }
 
-    public static void loadPosts(final ArrayList<PostFragment> postsList, final PostAdapter postAdapter,
-                                 final int num, @Nullable final SwipeRefreshLayout swipeRefreshLayout) {
-        MainActivity.isLoadingMore =true;
-        final boolean isEmpty = postsList.isEmpty();
-
-        //mPreviousLastId=InstagramApiSingletone.getLastId();
+    void loadPosts(final ArrayList<PostFragment> postsList,
+                                 final PostAdapter postAdapter,
+                                 final int num,
+                                 @Nullable final SwipeRefreshLayout swipeRefreshLayout) {
+        MainActivity.isLoadingMore = true;
         String maxId = InstagramApiSingletone.getLastId();
-        final Post instPost = new Post();
-        instagramApi.getData(InstagramApi.ACCESS_TOKEN, num,maxId).enqueue(new Callback<Post>() {
+        final Post post = new Post();
+        instagramApi.getData(InstagramApi.ACCESS_TOKEN, num, maxId).enqueue(new Callback<Post>() {
             @Override
             public void onResponse(retrofit2.Call<Post> call, retrofit2.Response<Post> response) {
                 if (response.isSuccessful()) {
-                    instPost.setData(response.body().getData());
-                    if (instPost.getData().size()==0) {
+                    post.setData(response.body().getData());
+                    if (post.getData().size()==0) {
                         if (swipeRefreshLayout!=null) {
                             swipeRefreshLayout.setRefreshing(false);
                         }
@@ -92,24 +94,34 @@ public class Loader {
                     }
                     String maxId = response.body().getPagination().getNextMaxId();
                     InstagramApiSingletone.setLastId(maxId);
-                    DateFormat formatter = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy", Locale.getDefault());
-                    for (int i=0;i<instPost.getData().size();++i) {
+                    DateFormat formatter = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy",
+                            Locale.getDefault());
+                    for (Datum data : post.getData()) {
                         PostFragment fragment = new PostFragment();
-                        String instDate = instPost.getData().get(i).getCreatedTime();
+                        String instDate = data.getCreatedTime();
                         Timestamp timestamp = new Timestamp(Long.parseLong(instDate));
                         Date date = new Date(timestamp.getTime()*1000);
                         fragment
-                                .setImageURL(instPost.getData().get(i).getImages().getStandardResolution().getUrl())
-                                .setLikesText(instPost.getData().get(i).getLikes().getCount())
-                                .setCommentsText(instPost.getData().get(i).getComments().getCount())
-                                .setDateText(formatter.format(date));
+                                .setImageURL(data
+                                        .getImages()
+                                        .getStandardResolution()
+                                        .getUrl())
+                                .setLikesText(data
+                                        .getLikes()
+                                        .getCount())
+                                .setCommentsText(data
+                                        .getComments()
+                                        .getCount())
+                                .setDateText(formatter.
+                                        format(date));
                         postsList.add(fragment);
                     }
-                    InstagramApiSingletone.setLastId(instPost.getData().get(instPost.getData().size()-1).getId());
+                    InstagramApiSingletone.setLastId(post.
+                            getData().get(post.getData().size()-1).getId());
                     if (swipeRefreshLayout!=null) {
                         swipeRefreshLayout.setRefreshing(false);
                     }
-                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                    ((Activity) context).runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             MainActivity.isLoadingMore =false;
@@ -117,7 +129,12 @@ public class Loader {
                         }
                     });
                 } else {
-                    Log.d("ProfileImageCallback", "Code: " + response.code() + " Message: " + response.message());
+                    Toast toast = Toast.makeText(context,
+                            context.getResources().getText(R.string.posts_loading_error),
+                            Toast.LENGTH_LONG);
+                    toast.show();
+                    Log.d("Posts Loading Callback", "Code: " +
+                            response.code() + " Message: " + response.message());
                 }
             }
 

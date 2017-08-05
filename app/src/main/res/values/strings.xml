@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Search for Instagram</string>
+
+    <string name="post_image">Post image</string>
+    <string name="post_likes">Post likes icon</string>
+    <string name="post_comments">Post comments icon</string>
+    <string name="profile_image">Profile image</string>
+
+    <string name="profile_loading_error">Failed to load profile data</string>
+    <string name="internet_error">Failed to connect with Internet</string>
+    <string name="posts_loading_error">Failed to load posts</string>
 </resources>

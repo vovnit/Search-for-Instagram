@@ -6,6 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.AbsListView;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -14,12 +17,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    GridView PostsGrid;
-    SwipeRefreshLayout refreshLayout;
-    ImageView profileImage;
-    TextView profileName;
-    ArrayList<PostFragment> postList;
-    PostAdapter postAdapter;
+    private GridView PostsGrid;
+    private SwipeRefreshLayout refreshLayout;
+    private ArrayList<PostFragment> postList;
+    private PostAdapter postAdapter;
+    private Loader loader;
     static Boolean isLoadingMore = true;
 
     @Override
@@ -36,24 +38,26 @@ public class MainActivity extends AppCompatActivity {
         } else {
             PostsGrid.setNumColumns(2);
         }
-
-        if (savedInstanceState!=null) {
-            postList = savedInstanceState.getParcelableArrayList("POSTS_GRID");
+        if (savedInstanceState==null) {
+            postList=new ArrayList<>();
         } else {
-            postList =new ArrayList<>();
+            postList=savedInstanceState.getParcelableArrayList("POSTS_GRID");
         }
         postAdapter=new PostAdapter(this, postList);
-        profileImage = (ImageView)findViewById(R.id.profileImageView);
-        profileName = (TextView)findViewById(R.id.profileTextView);
 
-        Loader.setContext(this);
-        Loader.loadProfile(profileImage,profileName);
+        ImageView profileImage = (ImageView) findViewById(R.id.profileImageView);
+        TextView profileName = (TextView) findViewById(R.id.profileTextView);
+        loader=new Loader();
+        loader.setContext(this);
+        loader.loadProfile(profileImage, profileName);
+
+
         PostsGrid.setAdapter(postAdapter);
         refreshLayout = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
         refreshLayout.setOnRefreshListener(onRefreshListener);
         PostsGrid.setOnScrollListener(onScrollListener);
         if (postList.isEmpty()) {
-            Loader.loadPosts(postList, postAdapter, InstagramApi.PostsToLoad, null);
+            loader.loadPosts(postList, postAdapter, InstagramApi.PostsToLoad, null);
         }
     }
 
@@ -63,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             InstagramApiSingletone.setLastId("");
             postList.clear();
             postAdapter.notifyDataSetChanged();
-            Loader.loadPosts(postList, postAdapter,InstagramApi.PostsToLoad, refreshLayout);
+            loader.loadPosts(postList, postAdapter,InstagramApi.PostsToLoad, refreshLayout);
         }
     };
 
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         int visibleItemCount, int totalItemCount) {
             int lastInScreen = firstVisibleItem + visibleItemCount;
             if ((lastInScreen == totalItemCount) && !(isLoadingMore)) {
-                Loader.loadPosts(postList, postAdapter, 5, null);
+                loader.loadPosts(postList, postAdapter, InstagramApi.PostsToLoad, null);
             }
         }
     };

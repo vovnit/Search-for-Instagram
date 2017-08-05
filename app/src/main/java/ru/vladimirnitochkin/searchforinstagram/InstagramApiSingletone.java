@@ -3,10 +3,6 @@ package ru.vladimirnitochkin.searchforinstagram;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by vovnit on 01.08.17.
- */
-
 class InstagramApiSingletone {
     private static InstagramApi instagramApi;
     private Retrofit retrofit;
